@@ -109,7 +109,7 @@ export function isBoolean(v: unknown): v is boolean {
  */
 export function createElement<
     T extends HTMLElement
-    >(
+>(
     tagName: keyof HTMLElementTagNameMap,
     props?: Partial<Record<keyof T, string | boolean | object>>,
     children?: HTMLElement | HTMLElement []
@@ -132,4 +132,8 @@ export function createElement<
         }
     }
     return element;
+}
+
+export function formatNumber(x: number, sep = ' ') {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
 }
