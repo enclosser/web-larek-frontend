@@ -10,7 +10,7 @@ export class LarekAPI extends Api implements ILarekAPI {
 			return response as IProductItem[];
 		} catch (error) {
 			console.error('Failed to fetch product list:', error);
-			throw error; // Rethrow or handle error as needed
+			throw error;
 		}
 	}
 
@@ -20,7 +20,7 @@ export class LarekAPI extends Api implements ILarekAPI {
 			return response as IProductItem;
 		} catch (error) {
 			console.error(`Failed to fetch product with id ${id}:`, error);
-			throw error; // Rethrow or handle error as needed
+			throw error;
 		}
 	}
 
@@ -30,7 +30,7 @@ export class LarekAPI extends Api implements ILarekAPI {
 			return response as IOrderStatus;
 		} catch (error) {
 			console.error('Failed to place order:', error);
-			throw error; // Rethrow or handle error as needed
+			throw error;
 		}
 	}
 }

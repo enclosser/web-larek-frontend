@@ -26,7 +26,7 @@ export class Modal extends Component<IModalData> {
 		if (value) {
 			this._content.replaceChildren(value);
 		} else {
-			this._content.innerHTML = ''; // Clear content if null
+			this._content.innerHTML = '';
 		}
 	}
 
@@ -37,7 +37,7 @@ export class Modal extends Component<IModalData> {
 
 	close() {
 		this.container.classList.remove('modal_active');
-		this.content = null; // Ensure content is cleared
+		this.content = null;
 		this.events.emit('modal:close');
 	}
 

@@ -27,7 +27,6 @@ export class Success extends Component<ISuccess> {
 
     set total(value: number) {
         this._total = value;
-        // Если нужно обновить отображение _total в DOM, можно добавить соответствующий метод
         this.updateTotalDisplay();
     }
 

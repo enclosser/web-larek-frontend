@@ -22,7 +22,6 @@ export class Page extends Component<IPage> {
 		this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
 		this._basket = ensureElement<HTMLElement>('.header__basket');
 
-		// Use arrow function to preserve `this` context
 		this._basket.addEventListener('click', () => this.events.emit('bids:open'));
 	}
 
