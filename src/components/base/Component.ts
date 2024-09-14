@@ -1,44 +1,27 @@
 export abstract class Component<T> {
-	protected constructor(protected readonly container: HTMLElement) {
-		// Код в конструкторе исполняется до всех объявлений в дочернем классе
-	}
+	protected constructor(protected readonly container: HTMLElement) {}
 
-	// Переключение класса
-	toggleClass(element: HTMLElement, className: string, force?: boolean) {
-		element?.classList.toggle(className, force);
-	}
-
-	// Установка текстового содержимого
-	protected setText(element: HTMLElement, value: unknown) {
+	protected setText(element: HTMLElement | Element, value: unknown) {
 		if (element) element.textContent = String(value);
 	}
 
-	// Смена статуса блокировки
-	setDisabled(element: HTMLElement, state: boolean) {
-		element?.toggleAttribute('disabled', state);
-	}
-
-	// Скрыть элемент
-	protected setHidden(element: HTMLElement) {
-		element.style.display = 'none';
-	}
-
-	// Показать элемент
-	protected setVisible(element: HTMLElement) {
-		element.style.display = '';
-	}
-
-	// Установить изображение с альтернативным текстом
-	protected setImage(element: HTMLImageElement, src: string, alt = '') {
+	protected setDisabled(element: HTMLElement, state: boolean) {
 		if (element) {
-			element.src = src;
-			element.alt = alt;
+			if (state) element.setAttribute('disabled', 'disabled');
+			else element.removeAttribute('disabled');
 		}
 	}
 
-	// Вернуть корневой DOM-элемент и обновить данные
+	protected addStyleClass(element: HTMLElement, value: unknown) {
+		if (element) element.classList.add(String(value));
+	}
+
+	protected removeStyleClass(element: HTMLElement, value: unknown) {
+		if (element) element.classList.remove(String(value));
+	}
+
 	render(data?: Partial<T>): HTMLElement {
-		Object.assign(this, data);
+		Object.assign(this as object, data ?? {});
 		return this.container;
 	}
 }
