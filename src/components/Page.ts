@@ -1,39 +1,46 @@
-import { Component } from "./base/Component";
-import { IEvents } from "./base/events";
-import { ensureElement } from "../utils/utils";
+import { Component } from './base/Component';
+import { ensureElement } from '../utils/utils';
+import { IPageView, TPage, TPageActions, TUpdateCounter } from '../types';
 
-interface IPage {
-	counter: number;
-	catalog: HTMLElement[];
-	locked: boolean;
-}
+export class Page extends Component<TPage> implements IPageView {
+	protected _catalog: HTMLElement;
+	protected _wrapper: HTMLElement;
+	protected _cart: HTMLElement;
+	protected _cartCounter: HTMLElement;
 
-export class Page extends Component<IPage> {
-	private _counter: HTMLElement;
-	private _catalog: HTMLElement;
-	private _wrapper: HTMLElement;
-	private _basket: HTMLElement;
-
-	constructor(container: HTMLElement, protected events: IEvents) {
+	constructor(container: HTMLElement, actions: TPageActions) {
 		super(container);
 
-		this._counter = ensureElement<HTMLElement>('.header__basket-counter');
-		this._catalog = ensureElement<HTMLElement>('.catalog__items');
-		this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
-		this._basket = ensureElement<HTMLElement>('.header__basket');
+		// Инициализация элементов с помощью ensureElement
+		this._catalog = ensureElement<HTMLElement>('.gallery', container);
+		this._wrapper = ensureElement<HTMLElement>('.page__wrapper', container);
+		this._cart = ensureElement<HTMLElement>('.header__basket', container);
+		this._cartCounter = ensureElement<HTMLElement>('.header__basket-counter', container);
 
-		this._basket.addEventListener('click', () => this.events.emit('bids:open'));
+		// Добавление обработчика клика на корзину, если он существует
+		if (actions?.onClick) {
+			this._cart.addEventListener('click', actions.onClick);
+		}
 	}
 
-	set counter(value: number) {
-		this.setText(this._counter, String(value));
-	}
-
+	// Метод для установки элементов каталога
 	set catalog(items: HTMLElement[]) {
 		this._catalog.replaceChildren(...items);
 	}
 
+	// Установка счетчика корзины
+	set cartCounter(data: TUpdateCounter) {
+		this.setText(this._cartCounter, data.count);
+	}
+
+	// Блокировка страницы
 	set locked(value: boolean) {
 		this.toggleClass(this._wrapper, 'page__wrapper_locked', value);
+	}
+
+	// Метод для переключения класса
+	private toggleClass(element: HTMLElement, className: string, condition: boolean): void {
+		if (condition) element.classList.add(className);
+		else element.classList.remove(className);
 	}
 }

@@ -1,47 +1,57 @@
-import { Component } from "./base/Component";
-import { ensureElement } from "../utils/utils";
-import { IEvents } from "./base/events";
+import { Component } from './base/Component';
+import { ensureElement } from '../utils/utils';
+import { IEvents } from './base/events';
+import { IModalView, TModalData } from '../types';
 
-interface IModalData {
-	content: HTMLElement;
-}
-
-export class Modal extends Component<IModalData> {
-	private _closeButton: HTMLButtonElement;
-	private _content: HTMLElement;
+export class Modal extends Component<TModalData> implements IModalView {
+	protected _closeButton: HTMLButtonElement;
+	protected _content: HTMLElement;
+	protected _nextButton?: HTMLButtonElement;
 
 	constructor(container: HTMLElement, protected events: IEvents) {
 		super(container);
 
 		this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
 		this._content = ensureElement<HTMLElement>('.modal__content', container);
+		this._nextButton = container.querySelector<HTMLButtonElement>('.card__button');
 
-		// Using arrow functions to maintain the correct `this` context
-		this._closeButton.addEventListener('click', () => this.close());
-		this.container.addEventListener('click', () => this.close());
+		this.addEventListeners();
+	}
+
+	// Метод для добавления всех необходимых обработчиков событий
+	private addEventListeners(): void {
+		this._closeButton.addEventListener('click', this.close.bind(this));
+		this.container.addEventListener('click', this.close.bind(this));
 		this._content.addEventListener('click', (event) => event.stopPropagation());
 	}
 
+	// Установка контента в модальном окне
 	set content(value: HTMLElement | null) {
-		if (value) {
-			this._content.replaceChildren(value);
-		} else {
-			this._content.innerHTML = '';
-		}
+		this._content.replaceChildren(value || document.createTextNode(''));
 	}
 
-	open() {
-		this.container.classList.add('modal_active');
+	// Открытие модального окна
+	open(): void {
+		this.addStyleClass(this.container, 'modal_active');
 		this.events.emit('modal:open');
 	}
 
-	close() {
-		this.container.classList.remove('modal_active');
+	// Закрытие модального окна
+	close(): void {
+		this.removeStyleClass(this.container, 'modal_active');
 		this.content = null;
 		this.events.emit('modal:close');
 	}
 
-	render(data: IModalData): HTMLElement {
+	// Переключение состояния кнопки (вкл./выкл.)
+	toggleCartBtn(state: boolean): void {
+		if (this._nextButton) {
+			this.setDisabled(this._nextButton, state);
+		}
+	}
+
+	// Рендер данных и открытие модального окна
+	render(data: TModalData): HTMLElement {
 		super.render(data);
 		this.open();
 		return this.container;
