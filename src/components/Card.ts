@@ -8,7 +8,7 @@ export class Card extends Component<TCard> implements ICardView {
 	protected _price: HTMLSpanElement;
 	protected _category?: HTMLSpanElement;
 	protected _description?: HTMLParagraphElement;
-	protected _button?: HTMLButtonElement;
+	public _button?: HTMLButtonElement;
 	protected _statusBtn: boolean;
 
 	constructor(
@@ -31,13 +31,8 @@ export class Card extends Component<TCard> implements ICardView {
 		}
 	}
 
-	get button(): HTMLButtonElement {
-		return this._button;
-	}
+	// Удалите геттер button
 
-	get statusBtn(): boolean {
-		return this._statusBtn;
-	}
 	set statusBtn(value: boolean) {
 		this._statusBtn = value;
 	}
@@ -46,32 +41,16 @@ export class Card extends Component<TCard> implements ICardView {
 		this.setText(this._title, value);
 	}
 
-	get title(): string {
-		return this._title.textContent || '';
-	}
-
 	set image(value: string) {
 		this.setImage(this._image, value, this.title);
-	}
-
-	get price(): string {
-		return this._price.textContent || '';
 	}
 
 	set price(value: string) {
 		this.setText(this._price, value === null ? 'Бесценно' : `${value} синапсов`);
 	}
 
-	get category(): string {
-		return this._category?.textContent || '';
-	}
-
 	set category(value: string) {
 		this.setText(this._category, value);
-	}
-
-	get description(): string {
-		return this._description?.textContent || '';
 	}
 
 	set description(value: string) {

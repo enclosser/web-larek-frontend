@@ -64,7 +64,12 @@ events.on('preview:changed', (item: ICatalogItem) => {
     const card = new CatalogItem(cloneTemplate(cardPreviewTemplate), {
         onClick: () => events.emit('cart:changed', item),
     });
-    card.button.disabled = item.status;
+
+    // Теперь напрямую обращаемся к свойству _button
+    if (card._button) {
+        card._button.disabled = item.status;
+    }
+
     card.setCategoryCard(item.category);
     modal.render({
         content: card.render({
@@ -77,6 +82,7 @@ events.on('preview:changed', (item: ICatalogItem) => {
         }),
     });
 });
+
 
 // show cart
 events.on('cart:open', () => {

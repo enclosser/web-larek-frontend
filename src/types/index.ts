@@ -119,7 +119,7 @@ export interface ICardView {
     price: string;
     category?: string;
     description?: string;
-    button: HTMLButtonElement;
+    button?: HTMLButtonElement;
     statusBtn: boolean;
     setCategoryCard(value: string): void;
 }
