@@ -43,7 +43,7 @@ export class AppState implements IAppState {
 		}
 		this.cartState.add(item.id);
 		item.status = true;
-		this.updateCartState(item);
+		this.updateCartState();
 	}
 
 	setCartPreview(): void {
@@ -63,15 +63,13 @@ export class AppState implements IAppState {
 		this.updateCartState();
 	}
 
-	updateCartState(item?: ICatalogItem): void {
+	updateCartState(): void {
 		this.getTotal();
 		this.events.emit('cart:open');
 		this.events.emit('cart:updateCounter', {
 			count: this.cartState.size,
 		});
-		if (item) {
-			this.events.emit('preview:changed', item);
-		}
+
 	}
 
 	setAddress(address: string): void {

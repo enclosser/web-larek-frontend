@@ -12,11 +12,13 @@ export class Contacts extends Form<TContactsForm> implements IContactsFormView {
 	) {
 		super(container, events);
 
-		// Проверяем наличие обработчика клика и кнопки submit
-		if (actions.onClick && this._submit) {
+		// Инициализируем valid как false
+		this.valid = false;
+
+		// Присваиваем обработчики действия, если они есть
+		if (actions.onClick) {
 			this._submit.addEventListener('click', actions.onClick);
 		}
-		this.valid = false;
 	}
 
 	// Универсальный метод для получения и установки значений полей формы
