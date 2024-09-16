@@ -1,6 +1,7 @@
-import { IOrderView, TOrderActions, TOrderForm } from '../types';
-import { Form } from './Form';
-import { IEvents } from './base/events';
+import {IOrderView, TOrderActions, TOrderForm} from '../types';
+import {Form} from './Form';
+import {ensureElement} from '../utils/utils'
+import {IEvents} from './base/events';
 
 export class Order extends Form<TOrderForm> implements IOrderView {
 	protected _cash: HTMLButtonElement;
@@ -15,8 +16,8 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 		super(container, events);
 
 		// Получение элементов с обязательной проверкой наличия
-		this._cash = this.ensureElement<HTMLButtonElement>('[name="cash"]', container);
-		this._card = this.ensureElement<HTMLButtonElement>('[name="card"]', container);
+		this._cash = ensureElement<HTMLButtonElement>('[name="cash"]', container);
+		this._card = ensureElement<HTMLButtonElement>('[name="card"]', container);
 		this._paymentTypes = [this._cash, this._card];
 
 		// Инициализация обработчиков событий
@@ -57,14 +58,5 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 		if (selectedButton) {
 			this.addStyleClass(selectedButton, 'button_alt-active');
 		}
-	}
-
-	// Метод для безопасного поиска элемента в DOM
-	private ensureElement<T extends HTMLElement>(selector: string, container: HTMLElement): T {
-		const element = container.querySelector<T>(selector);
-		if (!element) {
-			throw new Error(`Element with selector "${selector}" not found.`);
-		}
-		return element;
 	}
 }

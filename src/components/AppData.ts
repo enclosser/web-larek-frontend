@@ -141,20 +141,3 @@ export class AppState implements IAppState {
 		};
 	}
 }
-
-export class CatalogItem extends Model<ICatalogItem> {
-	id: string;
-	description: string;
-	image: string;
-	title: string;
-	category: string;
-	price: number | null;
-	status: boolean;
-}
-
-export class CartList extends Model<ICartItem> {
-	id: string;
-	title: string;
-	price: number | null;
-	status: boolean;
-}

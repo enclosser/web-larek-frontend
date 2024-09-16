@@ -31,7 +31,11 @@ export class ShoppingCart
 
 	// Установка элементов корзины
 	set items(items: HTMLElement[]) {
+		// Обновляем состояние кнопки заказа в зависимости от количества товаров
+		this._updateOrderButtonState(items.length);
 		this.setItems(items);
+		this._updateOrderIndex(); // Обновляем индексы после изменения товаров
+
 	}
 
 	// Вспомогательный метод для замены элементов корзины
@@ -47,19 +51,21 @@ export class ShoppingCart
 		}
 	}
 
-	// Установка кнопки заказа (активна/неактивна в зависимости от значения)
-	setOrderButton(value: number): void {
-		this.setDisabled(this._button, value <= 0);
-	}
-
 	// Установка цены
 	set price(price: number) {
 		this.setText(this._price, `${price} синапсов`);
 	}
 
-	// Установка индекса для каждого элемента в корзине
-	setOrderIndex(): void {
+	// Защищенный метод для обновления индексов элементов корзины
+	protected _updateOrderIndex(): void {
 		const orderedList = this.container.querySelectorAll('.basket__item-index');
 		orderedList.forEach((item, idx) => this.setText(item, idx + 1));
 	}
+
+
+	// Защищенный метод для обновления состояния кнопки заказа
+	protected _updateOrderButtonState(itemCount: number): void {
+		this.setDisabled(this._button, itemCount <= 0);
+	}
+
 }

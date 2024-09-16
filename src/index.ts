@@ -22,6 +22,7 @@ const page = new Page(document.body, {
 });
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
+
 // templates
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
@@ -30,6 +31,14 @@ const itemCartTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+
+// Создаем экземпляр Success один раз
+const success = new Success(cloneTemplate(successTemplate), {
+    onClick: () => {
+        events.emit('items:changed');
+        modal.close();
+    },
+});
 
 const shoppingCart = new ShoppingCart(cloneTemplate(cartTemplate), {
     onClick: () => events.emit('order:open'),
@@ -78,7 +87,7 @@ events.on('cart:open', () => {
 });
 
 // show cart item in shopping cart
-events.on('cart:preview', (cartState: TUpdateCounter) => {
+events.on('cart:preview', () => {
     // console.log(cartState.count, 'send state');
     shoppingCart.items = appData.cartItems.map((item) => {
         const cartItem = new CartItem(cloneTemplate(itemCartTemplate), {
@@ -89,8 +98,6 @@ events.on('cart:preview', (cartState: TUpdateCounter) => {
             price: item.price,
         });
     });
-    shoppingCart.setOrderButton(cartState.count);
-    shoppingCart.setOrderIndex();
 });
 
 // add item to cart
@@ -186,12 +193,6 @@ events.on(/^contacts\..*:change/, () => {
 
 // listening for successful server response
 events.on('success', () => {
-    const success = new Success(cloneTemplate(successTemplate), {
-        onClick: () => {
-            events.emit('items:changed');
-            modal.close();
-        },
-    });
     modal.render({
         content: success.render({
             totalPrice: appData.getTotal(),

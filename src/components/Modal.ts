@@ -1,7 +1,7 @@
-import { Component } from './base/Component';
-import { ensureElement } from '../utils/utils';
-import { IEvents } from './base/events';
-import { IModalView, TModalData } from '../types';
+import {Component} from './base/Component';
+import {ensureElement} from '../utils/utils';
+import {IEvents} from './base/events';
+import {IModalView, TModalData} from '../types';
 
 export class Modal extends Component<TModalData> implements IModalView {
 	protected _closeButton: HTMLButtonElement;
@@ -13,7 +13,6 @@ export class Modal extends Component<TModalData> implements IModalView {
 
 		this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
 		this._content = ensureElement<HTMLElement>('.modal__content', container);
-		this._nextButton = container.querySelector<HTMLButtonElement>('.card__button');
 
 		this.addEventListeners();
 	}

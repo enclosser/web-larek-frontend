@@ -146,8 +146,6 @@ export type TShopCartActions = {
 export interface IShoppingCartView {
     items: HTMLElement[];
     price: number;
-    setOrderButton(value: number): void;
-    setOrderIndex(): void;
 }
 
 // Page View
