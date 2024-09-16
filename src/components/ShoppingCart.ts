@@ -10,6 +10,7 @@ export class ShoppingCart
 	protected _price: HTMLElement;
 	protected _button: HTMLElement;
 	protected _itemIndex: HTMLElement;
+	private _totalPrice = 0; // Add a private property for total price
 
 	constructor(container: HTMLElement, actions: TShopCartActions) {
 		super(container);
@@ -31,11 +32,17 @@ export class ShoppingCart
 
 	// Установка элементов корзины
 	set items(items: HTMLElement[]) {
-		// Обновляем состояние кнопки заказа в зависимости от количества товаров
-		this._updateOrderButtonState(items.length);
+		// Обновляем состояние кнопки заказа в зависимости от общей цены
+		this._updateOrderButtonState();
 		this.setItems(items);
 		this._updateOrderIndex(); // Обновляем индексы после изменения товаров
+	}
 
+	// Установка цены и обновление состояния кнопки заказа
+	set price(price: number) {
+		this._totalPrice = price; // Устанавливаем общую цену
+		this.setText(this._price, `${price} синапсов`);
+		this._updateOrderButtonState(); // Обновляем состояние кнопки заказа
 	}
 
 	// Вспомогательный метод для замены элементов корзины
@@ -51,21 +58,15 @@ export class ShoppingCart
 		}
 	}
 
-	// Установка цены
-	set price(price: number) {
-		this.setText(this._price, `${price} синапсов`);
-	}
-
 	// Защищенный метод для обновления индексов элементов корзины
 	protected _updateOrderIndex(): void {
 		const orderedList = this.container.querySelectorAll('.basket__item-index');
 		orderedList.forEach((item, idx) => this.setText(item, idx + 1));
 	}
 
-
 	// Защищенный метод для обновления состояния кнопки заказа
-	protected _updateOrderButtonState(itemCount: number): void {
-		this.setDisabled(this._button, itemCount <= 0);
+	protected _updateOrderButtonState(): void {
+		// Активировать кнопку, если общая цена больше 0
+		this.setDisabled(this._button, this._totalPrice <= 0);
 	}
-
 }

@@ -7,7 +7,6 @@ import {
 	TFormErrors,
 	IAppState,
 } from '../types';
-import { Model } from './base/Model';
 import { IEvents } from './base/events';
 
 export class AppState implements IAppState {
