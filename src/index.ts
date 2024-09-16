@@ -22,7 +22,6 @@ const page = new Page(document.body, {
 });
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
-
 // templates
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
@@ -86,9 +85,14 @@ events.on('cart:open', () => {
     modal.render({ content: shoppingCart.render() });
 });
 
+
+events.on('cart:updatePrice', (data: { total: number }) => {
+    shoppingCart.price = data.total; // Обновляем цену в корзине
+});
+
+
 // show cart item in shopping cart
 events.on('cart:preview', () => {
-    // console.log(cartState.count, 'send state');
     shoppingCart.items = appData.cartItems.map((item) => {
         const cartItem = new CartItem(cloneTemplate(itemCartTemplate), {
             onClick: () => events.emit('card:remove', item),
@@ -112,7 +116,7 @@ events.on('cart:changed', (item: ICatalogItem) => {
 events.on('card:remove', (item: ICartItem) => {
     appData.removeCartItem(item);
     appData.setCartPreview();
-    // events.emit('cart:updatePrice', item);
+    events.emit('cart:updatePrice', { total: appData.getTotal() });
 });
 
 // picking payment type when making order

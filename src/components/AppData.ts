@@ -37,13 +37,14 @@ export class AppState implements IAppState {
 	}
 
 	addItemCart(item: ICatalogItem): void {
-		if (this.cartState.has(item.id)) {
-			console.error('Your item is already in the cart');
-			return;
-		}
+		if (this.cartState.has(item.id)) return; // Возвращаем сразу, если товар уже в корзине
+
 		this.cartState.add(item.id);
 		item.status = true;
-		this.updateCartState();
+		this.events.emit('preview:changed', item);
+		this.events.emit('cart:updateCounter', {
+			count: this.cartState.size,
+		});
 	}
 
 	setCartPreview(): void {
@@ -58,18 +59,22 @@ export class AppState implements IAppState {
 	}
 
 	removeCartItem(item: ICartItem): void {
-		this.cartState.delete(item.id);
 		item.status = false;
-		this.updateCartState();
+		this.cartState.delete(item.id);
+		this.events.emit('cart:updateCounter', {
+			count: this.cartState.size,
+		});
+		this.events.emit('cart:updatePrice', { total: this.getTotal() });
 	}
 
 	updateCartState(): void {
 		this.getTotal();
-		this.events.emit('cart:open');
+		// The cart modal is no longer opened here
 		this.events.emit('cart:updateCounter', {
 			count: this.cartState.size,
 		});
-
+		// Emit event to update the total price in the shopping cart
+		this.events.emit('cart:updatePrice', { total: this.getTotal() });
 	}
 
 	setAddress(address: string): void {
