@@ -1,7 +1,7 @@
-import {IOrderView, TOrderActions, TOrderForm} from '../types';
-import {Form} from './Form';
-import {ensureElement} from '../utils/utils'
-import {IEvents} from './base/events';
+import { IOrderView, TOrderActions, TOrderForm } from '../types';
+import { Form } from './Form';
+import { ensureElement } from '../utils/utils';
+import { IEvents } from './base/events';
 
 export class Order extends Form<TOrderForm> implements IOrderView {
 	protected _cash: HTMLButtonElement;
@@ -34,12 +34,9 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 		}
 	}
 
-	get address(): string {
+	// Добавляем метод для получения адреса
+	getAddress(): string {
 		return this.container.address.value;
-	}
-
-	set address(value: string) {
-		this.container.address.value = value;
 	}
 
 	setNextToggle(state: boolean): void {

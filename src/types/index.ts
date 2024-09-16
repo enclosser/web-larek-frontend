@@ -68,7 +68,7 @@ export interface IAppState {
 }
 
 export interface IOrderView {
-    address: string;
+    getAddress(): string;
     setNextToggle(state: boolean): void;
     setStyleBorder(paymentType: string): void;
 }

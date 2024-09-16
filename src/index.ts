@@ -83,7 +83,6 @@ events.on('preview:changed', (item: ICatalogItem) => {
     });
 });
 
-
 // show cart
 events.on('cart:open', () => {
     appData.setCartPreview();
@@ -91,11 +90,9 @@ events.on('cart:open', () => {
     modal.render({ content: shoppingCart.render() });
 });
 
-
 events.on('cart:updatePrice', (data: { total: number }) => {
     shoppingCart.price = data.total; // Обновляем цену в корзине
 });
-
 
 // show cart item in shopping cart
 events.on('cart:preview', () => {
@@ -148,11 +145,11 @@ events.on('order:open', () => {
 
 // when order input changes
 events.on('order.address:change', () => {
-    appData.setAddress(order.address);
+    appData.setAddress(order.getAddress()); // Используем метод getAddress
     order.setNextToggle(appData.isOrderValid());
 });
 
-// when errors validation occures
+// when errors validation occurs
 events.on('orderErrors:change', (errors: Record<string, string>) => {
     if (errors) order.errors = `${errors.payment || ''} ${errors.address || ''}`;
     else order.errors = '';
