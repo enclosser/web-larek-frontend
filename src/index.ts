@@ -193,7 +193,6 @@ const contacts = new Contacts(cloneTemplate(contactsTemplate), events, {
     },
 });
 
-// listening changes in contacts
 events.on(/^contacts\..*:change/, () => {
     appData.setPhone(contacts.phone);
     appData.setEmail(contacts.email);
