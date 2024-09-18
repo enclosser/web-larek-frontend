@@ -14,17 +14,21 @@ HTML, SCSS, TS, Webpack
 
 ### Внешний вид
 
-Основное окно
+_Основное окно_
 
 [![2024-09-14-15-54-28.png](https://i.postimg.cc/VkDP9h21/2024-09-14-15-54-28.png)](https://postimg.cc/WdFyT52f)
 
-Корзина
+_Корзина_
 
-[![image.png](https://i.postimg.cc/rprgy01b/image.png)](https://postimg.cc/JyRjPhdc)
+[![image.png](https://i.postimg.cc/bYZ1Xj2d/image.png)](https://postimg.cc/LhMJfwDM)
 
-Окно оформления заказа
+_Окно оформления заказа_
 
-[![image.png](https://i.postimg.cc/ydfDwnJz/image.png)](https://postimg.cc/34vrGXCL)
+[![image.png](https://i.postimg.cc/s2nG8njp/image.png)](https://postimg.cc/947fwYqM)
+
+_Заказ оформлен_
+
+[![image.png](https://i.postimg.cc/m2xz01s6/image.png)](https://postimg.cc/jCXSf5Cz)
 
 ### Важные файлы
 
@@ -38,7 +42,7 @@ HTML, SCSS, TS, Webpack
 
 ## Установка и запуск
 
-Для установки и запуска проекта необходимо выполнить команды
+Для установки и запуска проекта необходимо добавить адрес сервера в .env и выполнить команды
 
 ```
 npm install

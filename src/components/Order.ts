@@ -1,4 +1,4 @@
-import { IOrderView, TOrderActions, TOrderForm } from '../types';
+import {IOrderView, TFormState, TOrderActions, TOrderForm} from '../types';
 import { Form } from './Form';
 import { ensureElement } from '../utils/utils';
 import { IEvents } from './base/events';
@@ -11,7 +11,6 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 	constructor(
 		container: HTMLFormElement,
 		events: IEvents,
-		actions: TOrderActions
 	) {
 		super(container, events);
 
@@ -20,18 +19,21 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 		this._card = ensureElement<HTMLButtonElement>('[name="card"]', container);
 		this._paymentTypes = [this._cash, this._card];
 
-		// Инициализация обработчиков событий
-		this.initializeEventListeners(actions);
-		this.valid = false;
-	}
+		this._paymentTypes.forEach(button =>
+			button.addEventListener('click', () => {
+				const paymentType = button.getAttribute('name');
+				this.setStyleBorder(paymentType);
+				events.emit('payment:method:selected', {paymentType: paymentType});
+			})
+		);
 
-	// Метод для добавления обработчиков событий
-	private initializeEventListeners(actions: TOrderActions): void {
-		if (actions.onClickPayment) {
-			this._paymentTypes.forEach(button =>
-				button.addEventListener('click', actions.onClickPayment)
-			);
-		}
+		events.on('order:set:nexttoggle', (payload:TFormState) => {
+			this.setNextToggle(payload.valid);
+		});
+
+		// Инициализация обработчиков событий
+		// this.initializeEventListeners(actions);
+		this.valid = false;
 	}
 
 	// Добавляем метод для получения адреса

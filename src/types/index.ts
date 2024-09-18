@@ -203,3 +203,7 @@ export type TSuccessActions = {
 export interface ISuccessView {
     totalPrice: number;
 }
+
+export interface IPaymentTypeEvent {
+    paymentType: string;
+}

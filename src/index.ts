@@ -11,7 +11,7 @@ import {Contacts} from './components/Contacts';
 import {Success} from './components/Success';
 import {API_URL as items, CDN_URL as images} from './utils/constants';
 import {ensureElement, cloneTemplate} from './utils/utils';
-import {ICatalogItem, ICartItem, TUpdateCounter, ICardView, IShoppingCartView} from './types';
+import {ICatalogItem, ICartItem, TUpdateCounter, ICardView, IShoppingCartView, IPaymentTypeEvent} from './types';
 
 // templates
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -126,15 +126,12 @@ events.on('card:remove', (item: ICartItem) => {
 });
 
 // picking payment type when making order
-const order = new Order(cloneTemplate(orderTemplate), events, {
-    onClickPayment: (event: Event) => {
-        const paymentType = (event.target as HTMLElement).getAttribute('name');
-        appData.setPaymentType(paymentType);
-        order.setStyleBorder(paymentType);
-        order.setNextToggle(appData.isOrderValid());
-    },
-});
+const order = new Order(cloneTemplate(orderTemplate), events);
 
+events.on('payment:method:selected', (payload:IPaymentTypeEvent) => {
+    appData.setPaymentType(payload.paymentType);
+    events.emit('order:set:nexttoggle', {valid: appData.isOrderValid()});
+});
 // when order input changes
 events.on('order.address:change', () => {
     appData.setAddress(order.getAddress()); // Используем метод getAddress
