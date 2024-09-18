@@ -181,8 +181,10 @@ events.on('contacts:submit', () => {
     })
         .then((response) => {
             console.log(response);
-            appData.clearAllItems();
             events.emit('success');
+            appData.clearAllItems();
+            appData. setCartPreview();
+            shoppingCart.price = appData. getTotal();
         })
         .catch((error) => {
             events.emit('cart:open');

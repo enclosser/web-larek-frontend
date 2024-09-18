@@ -96,6 +96,10 @@ export class AppState implements IAppState {
 
 	clearAllItems(): void {
 		this.cartState.clear();
+		this.cartItems = [];
+		this.paymentState = { payment: null, address: null };
+		this.contactsState = { email: null, phone: null };
+		this.formErrors = {};
 		this.events.emit('cart:updateCounter', {
 			count: this.cartState.size,
 		});
