@@ -67,6 +67,8 @@ events.on('items:changed', () => {
     });
 });
 
+
+
 // show item when selected
 events.on('preview:changed', (item: ICatalogItem) => {
     const card = new CatalogItem(cloneTemplate(cardPreviewTemplate), {
@@ -92,11 +94,6 @@ events.on('preview:changed', (item: ICatalogItem) => {
         }),
     });
 });
-
-// show cart
-// events.on('cart:open', () => {
-//     modal.render({content: shoppingCart.render()});
-// });
 
 // show cart item in shopping cart
 events.on('cart:preview', () => {
@@ -176,6 +173,7 @@ events.on('contacts:submit', () => {
         .then((response) => {
             console.log(response);
             events.emit('success');
+            events.emit('order:reset');
             appData.clearAllItems();
             appData.setCartPreview();
             shoppingCart.price = appData.getTotal();

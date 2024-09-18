@@ -31,7 +31,7 @@ export class Card extends Component<TCard> implements ICardView {
 		}
 	}
 
-	// Удалите геттер button
+	// Удалить геттер button
 
 	set statusBtn(value: boolean) {
 		this._statusBtn = value;

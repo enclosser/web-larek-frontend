@@ -31,8 +31,13 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 			this.setNextToggle(payload.valid);
 		});
 
+		events.on('order:reset', () => {
+			this._paymentTypes.forEach(button =>
+				this.removeStyleClass(button, 'button_alt-active')
+			);
+		});
+
 		// Инициализация обработчиков событий
-		// this.initializeEventListeners(actions);
 		this.valid = false;
 	}
 
