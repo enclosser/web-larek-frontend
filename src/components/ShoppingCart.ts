@@ -1,18 +1,18 @@
-import { Component } from './base/Component';
-import { createElement, ensureElement } from '../utils/utils';
-import { IShoppingCartView, TShopCartActions, TShoppingCart } from '../types';
+import {Component} from './base/Component';
+import {createElement, ensureElement} from '../utils/utils';
+import {IShoppingCartView, TShopCartActions, TShoppingCart} from '../types';
+import {IEvents} from "./base/events";
 
 export class ShoppingCart
 	extends Component<TShoppingCart>
-	implements IShoppingCartView
-{
+	implements IShoppingCartView {
 	protected _items: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLElement;
 	protected _itemIndex: HTMLElement;
 	private _totalPrice = 0; // Add a private property for total price
 
-	constructor(container: HTMLElement, actions: TShopCartActions) {
+	constructor(container: HTMLElement, events: IEvents) {
 		super(container);
 
 		// Инициализация элементов корзины с проверками на наличие
@@ -25,8 +25,11 @@ export class ShoppingCart
 		this.setItems([]);
 
 		// Добавление обработчика на кнопку, если она существует
-		if (this._button && actions.onClick) {
-			this._button.addEventListener('click', actions.onClick);
+		if (this._button) {
+			this._button.addEventListener('click',
+				() => {
+					events.emit('shoppingcard:click')
+				});
 		}
 	}
 

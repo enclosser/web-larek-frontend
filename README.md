@@ -2,15 +2,17 @@
 
 Реализация интернет-магазин с товарами для веб-разработчика
 
-Стек: HTML, SCSS, TS, Webpack
+### Стек
 
-Структура проекта:
+HTML, SCSS, TS, Webpack
+
+### Структура проекта:
 
 - src/ — исходные файлы проекта
 - src/components/ — папка с JS компонентами
 - src/components/base/ — папка с базовым кодом
 
-Внешний вид:
+### Внешний вид
 
 Основное окно
 
@@ -24,17 +26,14 @@
 
 [![image.png](https://i.postimg.cc/ydfDwnJz/image.png)](https://postimg.cc/34vrGXCL)
 
-Важные файлы:
+### Важные файлы
 
-- src/pages/index.html — HTML-файл главной страницы
-- src/types/index.ts — файл с типами
-- src/index.ts — точка входа приложения
-- src/scss/styles.scss — корневой файл стилей
-- src/utils/constants.ts — файл с константами
-- src/utils/utils.ts — файл с утилитами
-
-- `src/types/index.ts` — файл экспортируемых типов
-
+- `src/pages/index.html` — HTML-файл главной страницы
+- `src/types/index.ts` — файл с типами
+- `src/index.ts` — точка входа приложения
+- `src/assets/scss/styles.scss` — корневой файл стилей
+- `src/utils/constants.ts` — файл с константами
+- `src/utils/utils.ts` — файл с утилитами
 - `.env` — файл окружения с адресом до API
 
 ## Установка и запуск

@@ -1,12 +1,13 @@
 import { ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
 import { ISuccessView, TSuccessActions, TSuccessForm } from '../types';
+import {IEvents} from "./base/events";
 
 export class Success extends Component<TSuccessForm> implements ISuccessView {
     protected _close: HTMLElement;
     protected _totalPrice: HTMLParagraphElement;
 
-    constructor(container: HTMLFormElement, actions: TSuccessActions) {
+    constructor(container: HTMLFormElement, events: IEvents) {
         super(container);
 
         this._totalPrice = ensureElement<HTMLParagraphElement>(
@@ -19,7 +20,10 @@ export class Success extends Component<TSuccessForm> implements ISuccessView {
             container
         );
 
-        this._close.addEventListener('click', actions?.onClick);
+        this._close.addEventListener('click', () => {
+            events.emit('success:close');
+
+        });
     }
 
     set totalPrice(value: number) {

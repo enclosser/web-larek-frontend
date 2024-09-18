@@ -1,26 +1,17 @@
 import './assets/scss/styles.scss';
 import {EventEmitter} from './components/base/events';
-import {API_URL as items, CDN_URL as images} from './utils/constants';
 import {StoreAPI} from './components/StoreAPI';
 import {AppState} from './components/AppData';
 import {Page} from './components/Page';
-import {ensureElement, cloneTemplate} from './utils/utils';
-import {ICatalogItem, ICartItem, TUpdateCounter, ICardView, IShoppingCartView} from './types';
 import {Card as CatalogItem, Card as CartItem} from './components/Card';
 import {Modal} from './components/Modal';
 import {ShoppingCart} from './components/ShoppingCart';
 import {Order} from './components/Order';
 import {Contacts} from './components/Contacts';
 import {Success} from './components/Success';
-
-const events = new EventEmitter();
-const api = new StoreAPI({items, images});
-const appData = new AppState(events);
-
-const page = new Page(document.body, {
-    onClick: (event) => events.emit('cart:open', event),
-});
-const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
+import {API_URL as items, CDN_URL as images} from './utils/constants';
+import {ensureElement, cloneTemplate} from './utils/utils';
+import {ICatalogItem, ICartItem, TUpdateCounter, ICardView, IShoppingCartView} from './types';
 
 // templates
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -31,17 +22,34 @@ const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-// Создаем экземпляр Success один раз
-const success = new Success(cloneTemplate(successTemplate), {
-    onClick: () => {
-        events.emit('items:changed');
-        modal.close();
-    },
-});
+const events = new EventEmitter();
+const api = new StoreAPI({items, images});
+const appData = new AppState(events);
+const page = new Page(document.body, events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
+const success = new Success(cloneTemplate(successTemplate), events);
+const shoppingCart = new ShoppingCart(cloneTemplate(cartTemplate), events);
 
-const shoppingCart = new ShoppingCart(cloneTemplate(cartTemplate), {
-    onClick: () => events.emit('order:open'),
-});
+
+events.on('shoppingcard:click', () => {
+    modal.render({
+        content: order.render({
+            address: '',
+            valid: appData.isOrderValid(),
+            errors: [],
+        }),
+    });
+})
+
+events.on('success:close', () => {
+    events.emit('items:changed');
+    modal.close();
+})
+
+// show cart
+events.on('card:click', () => {
+    modal.render({content: shoppingCart.render()});
+})
 
 // show items on main page
 events.on('items:changed', () => {
@@ -69,7 +77,7 @@ events.on('preview:changed', (item: ICatalogItem) => {
 
     // Теперь напрямую обращаемся к свойству _button
     if (card._button) {
-        card._button.disabled =  isItemAdd;
+        card._button.disabled = isItemAdd;
     }
 
     card.setCategoryCard(item.category);
@@ -86,9 +94,9 @@ events.on('preview:changed', (item: ICatalogItem) => {
 });
 
 // show cart
-events.on('cart:open', () => {
-    modal.render({content: shoppingCart.render()});
-});
+// events.on('cart:open', () => {
+//     modal.render({content: shoppingCart.render()});
+// });
 
 // show cart item in shopping cart
 events.on('cart:preview', () => {
@@ -125,17 +133,6 @@ const order = new Order(cloneTemplate(orderTemplate), events, {
         order.setStyleBorder(paymentType);
         order.setNextToggle(appData.isOrderValid());
     },
-});
-
-// open order
-events.on('order:open', () => {
-    modal.render({
-        content: order.render({
-            address: '',
-            valid: appData.isOrderValid(),
-            errors: [],
-        }),
-    });
 });
 
 // when order input changes
@@ -183,8 +180,8 @@ events.on('contacts:submit', () => {
             console.log(response);
             events.emit('success');
             appData.clearAllItems();
-            appData. setCartPreview();
-            shoppingCart.price = appData. getTotal();
+            appData.setCartPreview();
+            shoppingCart.price = appData.getTotal();
         })
         .catch((error) => {
             events.emit('cart:open');

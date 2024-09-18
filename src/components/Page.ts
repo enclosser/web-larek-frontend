@@ -1,6 +1,7 @@
-import { Component } from './base/Component';
-import { ensureElement } from '../utils/utils';
-import { IPageView, TPage, TPageActions, TUpdateCounter } from '../types';
+import {Component} from './base/Component';
+import {ensureElement} from '../utils/utils';
+import {IPageView, TPage, TPageActions, TUpdateCounter} from '../types';
+import {IEvents} from "./base/events";
 
 export class Page extends Component<TPage> implements IPageView {
 	protected _catalog: HTMLElement;
@@ -8,7 +9,7 @@ export class Page extends Component<TPage> implements IPageView {
 	protected _cart: HTMLElement;
 	protected _cartCounter: HTMLElement;
 
-	constructor(container: HTMLElement, actions: TPageActions) {
+	constructor(container: HTMLElement, events: IEvents) {
 		super(container);
 
 		// Инициализация элементов с помощью ensureElement
@@ -18,9 +19,9 @@ export class Page extends Component<TPage> implements IPageView {
 		this._cartCounter = ensureElement<HTMLElement>('.header__basket-counter', container);
 
 		// Добавление обработчика клика на корзину, если он существует
-		if (actions?.onClick) {
-			this._cart.addEventListener('click', actions.onClick);
-		}
+		this._cart.addEventListener('click', () => {
+			events.emit('card:click');
+		});
 	}
 
 	// Метод для установки элементов каталога
