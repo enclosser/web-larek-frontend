@@ -6,7 +6,6 @@ import {IModalView, TModalData} from '../types';
 export class Modal extends Component<TModalData> implements IModalView {
 	protected _closeButton: HTMLButtonElement;
 	protected _content: HTMLElement;
-	protected _nextButton?: HTMLButtonElement;
 
 	constructor(container: HTMLElement, protected events: IEvents) {
 		super(container);
@@ -40,13 +39,6 @@ export class Modal extends Component<TModalData> implements IModalView {
 		this.removeStyleClass(this.container, 'modal_active');
 		this.content = null;
 		this.events.emit('modal:close');
-	}
-
-	// Переключение состояния кнопки (вкл./выкл.)
-	toggleCartBtn(state: boolean): void {
-		if (this._nextButton) {
-			this.setDisabled(this._nextButton, state);
-		}
 	}
 
 	// Рендер данных и открытие модального окна

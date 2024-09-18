@@ -16,14 +16,12 @@ export interface ICatalogItem {
     title: string;
     category: string;
     price: number | null;
-    status: boolean;
 }
 
 export interface ICartItem {
     id: string;
     title: string;
     price: number | null;
-    status: boolean;
 }
 
 // StoreAPI
@@ -64,7 +62,7 @@ export interface IAppState {
     setEmail(email: string): void;
     isOrderValid(): boolean;
     isContactsValid(): boolean;
-    createOrder(): void;
+    // createOrder(): void;
 }
 
 export interface IOrderView {
@@ -178,7 +176,7 @@ export interface IModalView {
     content: HTMLElement;
     open(): void;
     close(): void;
-    toggleCartBtn(state: boolean): void;
+    // toggleCartBtn(state: boolean): void;
     render(data: TModalData): HTMLElement;
 }
 

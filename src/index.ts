@@ -1,20 +1,20 @@
 import './scss/styles.scss';
-import { EventEmitter } from './components/base/events';
-import { API_URL as items, CDN_URL as images } from './utils/constants';
-import { StoreAPI } from './components/StoreAPI';
-import { AppState } from './components/AppData';
-import { Page } from './components/Page';
-import { ensureElement, cloneTemplate } from './utils/utils';
-import { ICatalogItem, ICartItem, TUpdateCounter } from './types';
-import { Card as CatalogItem, Card as CartItem } from './components/Card';
-import { Modal } from './components/Modal';
-import { ShoppingCart } from './components/ShoppingCart';
-import { Order } from './components/Order';
-import { Contacts } from './components/Contacts';
-import { Success } from './components/Success';
+import {EventEmitter} from './components/base/events';
+import {API_URL as items, CDN_URL as images} from './utils/constants';
+import {StoreAPI} from './components/StoreAPI';
+import {AppState} from './components/AppData';
+import {Page} from './components/Page';
+import {ensureElement, cloneTemplate} from './utils/utils';
+import {ICatalogItem, ICartItem, TUpdateCounter, ICardView, IShoppingCartView} from './types';
+import {Card as CatalogItem, Card as CartItem} from './components/Card';
+import {Modal} from './components/Modal';
+import {ShoppingCart} from './components/ShoppingCart';
+import {Order} from './components/Order';
+import {Contacts} from './components/Contacts';
+import {Success} from './components/Success';
 
 const events = new EventEmitter();
-const api = new StoreAPI({ items, images });
+const api = new StoreAPI({items, images});
 const appData = new AppState(events);
 
 const page = new Page(document.body, {
@@ -65,9 +65,11 @@ events.on('preview:changed', (item: ICatalogItem) => {
         onClick: () => events.emit('cart:changed', item),
     });
 
+    const isItemAdd = appData.cartState.has(item.id);
+
     // Теперь напрямую обращаемся к свойству _button
     if (card._button) {
-        card._button.disabled = item.status;
+        card._button.disabled =  isItemAdd;
     }
 
     card.setCategoryCard(item.category);
@@ -78,20 +80,14 @@ events.on('preview:changed', (item: ICatalogItem) => {
             category: item.category,
             price: item.price,
             description: item.description,
-            statusBtn: item.status,
+            statusBtn: isItemAdd,
         }),
     });
 });
 
 // show cart
 events.on('cart:open', () => {
-    appData.setCartPreview();
-    shoppingCart.price = appData.getTotal();
-    modal.render({ content: shoppingCart.render() });
-});
-
-events.on('cart:updatePrice', (data: { total: number }) => {
-    shoppingCart.price = data.total; // Обновляем цену в корзине
+    modal.render({content: shoppingCart.render()});
 });
 
 // show cart item in shopping cart
@@ -109,17 +105,16 @@ events.on('cart:preview', () => {
 
 // add item to cart
 events.on('cart:changed', (item: ICatalogItem) => {
-    if (!item.status) {
-        appData.addItemCart(item);
-        modal.toggleCartBtn(item.status);
-    }
+    appData.addItemCart(item);
+    appData.setCartPreview();
+    shoppingCart.price = appData.getTotal();
 });
 
 // remove item from cart
 events.on('card:remove', (item: ICartItem) => {
     appData.removeCartItem(item);
     appData.setCartPreview();
-    events.emit('cart:updatePrice', { total: appData.getTotal() });
+    shoppingCart.price = appData.getTotal();
 });
 
 // picking payment type when making order
@@ -173,21 +168,24 @@ events.on('order:submit', () => {
 });
 
 // placing an order
-const contacts = new Contacts(cloneTemplate(contactsTemplate), events, {
-    onClick: () => {
-        appData.createOrder();
-        api
-            .orderItems(appData.order)
-            .then((response) => {
-                console.log(response);
-                appData.clearAllItems();
-                events.emit('success');
-            })
-            .catch((error) => {
-                events.emit('cart:open');
-                console.error(error);
-            });
-    },
+const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
+
+events.on('contacts:submit', () => {
+    api.orderItems({
+        ...appData.contactsState,
+        ...appData.paymentState,
+        total: appData.getTotal(),
+        items: appData.cartItems.map(cardItem => cardItem.id)
+    })
+        .then((response) => {
+            console.log(response);
+            appData.clearAllItems();
+            events.emit('success');
+        })
+        .catch((error) => {
+            events.emit('cart:open');
+            console.error(error);
+        });
 });
 
 events.on(/^contacts\..*:change/, () => {

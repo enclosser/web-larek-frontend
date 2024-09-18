@@ -8,7 +8,7 @@ export class Contacts extends Form<TContactsForm> implements IContactsFormView {
 	constructor(
 		container: HTMLFormElement,
 		events: IEvents,
-		actions: TContactsActions
+		//actions: TContactsActions
 	) {
 		super(container, events);
 
@@ -16,9 +16,9 @@ export class Contacts extends Form<TContactsForm> implements IContactsFormView {
 		this.valid = false;
 
 		// Присваиваем обработчики действия, если они есть
-		if (actions.onClick) {
-			this._submit.addEventListener('click', actions.onClick);
-		}
+		// if (actions.onClick) {
+		// 	this._submit.addEventListener('click', actions.onClick);
+		// }
 	}
 
 	// Универсальный метод для получения и установки значений полей формы

@@ -12,15 +12,6 @@ import { IEvents } from './base/events';
 export class AppState implements IAppState {
 	catalog: ICatalogItem[] = [];
 	cartItems: ICartItem[] = [];
-	total = 0;
-	order: TOrder = {
-		payment: null,
-		email: '',
-		phone: '',
-		address: '',
-		total: 0,
-		items: [],
-	};
 	formErrors: TFormErrors = {};
 	cartState = new Set<string>();
 	paymentState: TPaymentState = { payment: null, address: null };
@@ -31,7 +22,7 @@ export class AppState implements IAppState {
 	setCatalog(items: ICatalogItem[]): void {
 		this.catalog = items.map(item => ({
 			...item,
-			status: false,
+			// status: false,
 		}));
 		this.events.emit('items:changed', { catalog: this.catalog });
 	}
@@ -40,26 +31,13 @@ export class AppState implements IAppState {
 		if (this.cartState.has(item.id)) return; // Возвращаем сразу, если товар уже в корзине
 
 		this.cartState.add(item.id);
-		item.status = true;
 		this.events.emit('preview:changed', item);
 		this.events.emit('cart:updateCounter', {
 			count: this.cartState.size,
 		});
 	}
 
-	setCartPreview(): void {
-		this.cartItems = this.catalog.filter(item => this.cartState.has(item.id));
-		this.getTotal();
-		this.events.emit('cart:preview', { count: this.cartState.size });
-	}
-
-	getTotal(): number {
-		this.total = this.cartItems.reduce((acc, next) => acc + (next.price ?? 0), 0);
-		return this.total;
-	}
-
 	removeCartItem(item: ICartItem): void {
-		item.status = false;
 		this.cartState.delete(item.id);
 		this.events.emit('cart:updateCounter', {
 			count: this.cartState.size,
@@ -67,14 +45,14 @@ export class AppState implements IAppState {
 		this.events.emit('cart:updatePrice', { total: this.getTotal() });
 	}
 
-	updateCartState(): void {
-		this.getTotal();
-		// The cart modal is no longer opened here
-		this.events.emit('cart:updateCounter', {
-			count: this.cartState.size,
-		});
-		// Emit event to update the total price in the shopping cart
-		this.events.emit('cart:updatePrice', { total: this.getTotal() });
+	setCartPreview(): void {
+		this.cartItems = this.catalog.filter(item => this.cartState.has(item.id));
+		// this.getTotal();
+		this.events.emit('cart:preview', { count: this.cartState.size });
+	}
+
+	getTotal(): number {
+		return this.cartItems.reduce((acc, next) => acc + (next.price ?? 0), 0);
 	}
 
 	setAddress(address: string): void {
@@ -117,29 +95,11 @@ export class AppState implements IAppState {
 		return !Object.keys(this.formErrors).length;
 	}
 
-	getPricelessItems(): Set<string> {
-		return new Set(this.catalog.filter(item => item.price === null).map(item => item.id));
-	}
-
 	clearAllItems(): void {
-		this.cartItems.forEach(item => (item.status = false));
 		this.cartState.clear();
 		this.events.emit('cart:updateCounter', {
 			count: this.cartState.size,
 		});
 		this.events.emit('items:changed');
-	}
-
-	createOrder(): void {
-		const setPriceless = this.getPricelessItems();
-		this.order.items = Array.from(this.cartState).filter(id => !setPriceless.has(id));
-		this.order = {
-			...this.order,
-			email: this.contactsState.email,
-			phone: this.contactsState.phone,
-			payment: this.paymentState.payment,
-			address: this.paymentState.address,
-			total: this.getTotal(),
-		};
 	}
 }
