@@ -131,8 +131,8 @@ export const TDictCategoryCard: Map<string, string> = new Map([
 
 // ShoppingCart View
 export type TShoppingCart = {
-    items: HTMLElement[];
-    price: number;
+    // items: HTMLElement[];
+    // price: number;
     list: HTMLElement[];
 };
 
@@ -141,8 +141,8 @@ export type TShopCartActions = {
 };
 
 export interface IShoppingCartView {
-    items: HTMLElement[];
-    price: number;
+    // items: HTMLElement[];
+    // price: number;
 }
 
 // Page View
@@ -206,4 +206,8 @@ export interface ISuccessView {
 
 export interface IPaymentTypeEvent {
     paymentType: string;
+}
+
+export interface IOrderPriceEvent {
+    price: number;
 }

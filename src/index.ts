@@ -97,7 +97,7 @@ events.on('preview:changed', (item: ICatalogItem) => {
 
 // show cart item in shopping cart
 events.on('cart:preview', () => {
-    shoppingCart.items = appData.cartItems.map((item) => {
+    const shoppingCardItems = appData.cartItems.map((item) => {
         const cartItem = new CartItem(cloneTemplate(itemCartTemplate), {
             onClick: () => events.emit('card:remove', item),
         });
@@ -106,20 +106,25 @@ events.on('cart:preview', () => {
             price: item.price,
         });
     });
+
+    events.emit('shoppingcard:items:update',  shoppingCardItems);
+    events.emit('shoppingcard:price:update', {price: appData.getTotal()});
 });
 
 // add item to cart
 events.on('cart:changed', (item: ICatalogItem) => {
     appData.addItemCart(item);
     appData.setCartPreview();
-    shoppingCart.price = appData.getTotal();
+    events.emit('shoppingcard:price:update', {price: appData.getTotal()});
+    // shoppingCart.price = appData.getTotal();
 });
 
 // remove item from cart
 events.on('card:remove', (item: ICartItem) => {
     appData.removeCartItem(item);
     appData.setCartPreview();
-    shoppingCart.price = appData.getTotal();
+    events.emit('shoppingcard:price:update', {price: appData.getTotal()});
+    // shoppingCart.price = appData.getTotal();
 });
 
 // picking payment type when making order
@@ -176,7 +181,8 @@ events.on('contacts:submit', () => {
             events.emit('order:reset');
             appData.clearAllItems();
             appData.setCartPreview();
-            shoppingCart.price = appData.getTotal();
+            events.emit('shoppingcard:price:update', {price: appData.getTotal()});
+            // shoppingCart.price = appData.getTotal();
         })
         .catch((error) => {
             events.emit('cart:open');

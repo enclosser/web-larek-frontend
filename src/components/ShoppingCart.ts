@@ -1,7 +1,8 @@
 import {Component} from './base/Component';
-import {createElement, ensureElement} from '../utils/utils';
-import {IShoppingCartView, TShopCartActions, TShoppingCart} from '../types';
+import {cloneTemplate, createElement, ensureElement} from '../utils/utils';
+import {ICartItem, IOrderPriceEvent, IShoppingCartView, TShopCartActions, TShoppingCart} from '../types';
 import {IEvents} from "./base/events";
+import {Card as CartItem} from "./Card";
 
 export class ShoppingCart
 	extends Component<TShoppingCart>
@@ -10,7 +11,6 @@ export class ShoppingCart
 	protected _price: HTMLElement;
 	protected _button: HTMLElement;
 	protected _itemIndex: HTMLElement;
-	private _totalPrice = 0; // Add a private property for total price
 
 	constructor(container: HTMLElement, events: IEvents) {
 		super(container);
@@ -31,21 +31,16 @@ export class ShoppingCart
 					events.emit('shoppingcard:click')
 				});
 		}
-	}
 
-	// Установка элементов корзины
-	set items(items: HTMLElement[]) {
-		// Обновляем состояние кнопки заказа в зависимости от общей цены
-		this._updateOrderButtonState();
-		this.setItems(items);
-		this._updateOrderIndex(); // Обновляем индексы после изменения товаров
-	}
+		events.on('shoppingcard:price:update', (payload: IOrderPriceEvent) => {
+			this.setText(this._price, `${payload.price} синапсов`);
+			this._updateOrderButtonState(payload.price); // Обновляем состояние кнопки заказа
+		})
 
-	// Установка цены и обновление состояния кнопки заказа
-	set price(price: number) {
-		this._totalPrice = price; // Устанавливаем общую цену
-		this.setText(this._price, `${price} синапсов`);
-		this._updateOrderButtonState(); // Обновляем состояние кнопки заказа
+		events.on('shoppingcard:items:update', (shoppingCardItems: HTMLElement[]) => {
+			this.setItems(shoppingCardItems);
+			this._updateOrderIndex(); // Обновляем индексы после изменения товаров
+		})
 	}
 
 	// Вспомогательный метод для замены элементов корзины
@@ -68,8 +63,8 @@ export class ShoppingCart
 	}
 
 	// Защищенный метод для обновления состояния кнопки заказа
-	protected _updateOrderButtonState(): void {
+	protected _updateOrderButtonState(price: number): void {
 		// Активировать кнопку, если общая цена больше 0
-		this.setDisabled(this._button, this._totalPrice <= 0);
+		this.setDisabled(this._button, price <= 0);
 	}
 }
