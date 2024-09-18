@@ -175,7 +175,9 @@ events.on('contacts:submit', () => {
         ...appData.contactsState,
         ...appData.paymentState,
         total: appData.getTotal(),
-        items: appData.cartItems.map(cardItem => cardItem.id)
+        items: appData.cartItems
+            .filter(cardItem => cardItem.price && cardItem.price > 0)
+            .map(cardItem => cardItem.id)
     })
         .then((response) => {
             console.log(response);

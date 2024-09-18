@@ -3,7 +3,6 @@ import {
 	ICartItem,
 	TPaymentState,
 	TContactsState,
-	TOrder,
 	TFormErrors,
 	IAppState,
 } from '../types';
