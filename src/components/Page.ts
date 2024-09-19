@@ -1,5 +1,5 @@
 import {Component} from './base/Component';
-import {ensureElement} from '../utils/utils';
+import {ensureElement, toggleClass} from '../utils/utils';
 import {IPageView, TPage, TPageActions, TUpdateCounter} from '../types';
 import {IEvents} from "./base/events";
 
@@ -22,26 +22,20 @@ export class Page extends Component<TPage> implements IPageView {
 		this._cart.addEventListener('click', () => {
 			events.emit('card:click');
 		});
-	}
 
-	// Метод для установки элементов каталога
-	set catalog(items: HTMLElement[]) {
-		this._catalog.replaceChildren(...items);
-	}
+		events.on('catalog:update', (items: HTMLElement[]) => {
+			this._catalog.replaceChildren(...items);
+		});
 
-	// Установка счетчика корзины
-	set cartCounter(data: TUpdateCounter) {
-		this.setText(this._cartCounter, data.count);
-	}
+		events.on('card:updateCounter', (payload: TUpdateCounter) => {
+			this.setText(this._cartCounter, payload.count);
+		});
 
-	// Блокировка страницы
-	set locked(value: boolean) {
-		this.toggleClass(this._wrapper, 'page__wrapper_locked', value);
-	}
-
-	// Метод для переключения класса
-	private toggleClass(element: HTMLElement, className: string, condition: boolean): void {
-		if (condition) element.classList.add(className);
-		else element.classList.remove(className);
+		events.on('modal:open', () => {
+			toggleClass(this._wrapper, 'page__wrapper_locked', true)
+		});
+		events.on('modal:close', () => {
+			toggleClass(this._wrapper, 'page__wrapper_locked', false)
+		});
 	}
 }

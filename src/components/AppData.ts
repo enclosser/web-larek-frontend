@@ -1,6 +1,6 @@
 import {
 	ICatalogItem,
-	ICartItem,
+	ICardItem,
 	TPaymentState,
 	TContactsState,
 	TFormErrors,
@@ -10,7 +10,7 @@ import { IEvents } from './base/events';
 
 export class AppState implements IAppState {
 	catalog: ICatalogItem[] = [];
-	cartItems: ICartItem[] = [];
+	cartItems: ICardItem[] = [];
 	formErrors: TFormErrors = {};
 	cartState = new Set<string>();
 	paymentState: TPaymentState = { payment: null, address: null };
@@ -25,27 +25,27 @@ export class AppState implements IAppState {
 		this.events.emit('items:changed', { catalog: this.catalog });
 	}
 
-	addItemCart(item: ICatalogItem): void {
+	addItemCard(item: ICatalogItem): void {
 		if (this.cartState.has(item.id)) return; // Возвращаем сразу, если товар уже в корзине
 
 		this.cartState.add(item.id);
 		this.events.emit('preview:changed', item);
-		this.events.emit('cart:updateCounter', {
+		this.events.emit('card:updateCounter', {
 			count: this.cartState.size,
 		});
 	}
 
-	removeCartItem(item: ICartItem): void {
+	removeCardItem(item: ICardItem): void {
 		this.cartState.delete(item.id);
-		this.events.emit('cart:updateCounter', {
+		this.events.emit('card:updateCounter', {
 			count: this.cartState.size,
 		});
-		this.events.emit('cart:updatePrice', { total: this.getTotal() });
+		this.events.emit('card:updatePrice', { total: this.getTotal() });
 	}
 
-	setCartPreview(): void {
+	setCardPreview(): void {
 		this.cartItems = this.catalog.filter(item => this.cartState.has(item.id));
-		this.events.emit('cart:preview', { count: this.cartState.size });
+		this.events.emit('card:preview', { count: this.cartState.size });
 	}
 
 	getTotal(): number {
@@ -98,7 +98,7 @@ export class AppState implements IAppState {
 		this.paymentState = { payment: null, address: null };
 		this.contactsState = { email: null, phone: null };
 		this.formErrors = {};
-		this.events.emit('cart:updateCounter', {
+		this.events.emit('card:updateCounter', {
 			count: this.cartState.size,
 		});
 		this.events.emit('items:changed');

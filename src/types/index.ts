@@ -18,7 +18,7 @@ export interface ICatalogItem {
     price: number | null;
 }
 
-export interface ICartItem {
+export interface ICardItem {
     id: string;
     title: string;
     price: number | null;
@@ -51,7 +51,7 @@ export type TContactsState = {
 };
 
 export interface IAppState {
-    cartItems: ICartItem[];
+    cartItems: ICardItem[];
     cartState: Set<string>;
     paymentState: TPaymentState;
     contactsState: TContactsState;
@@ -66,8 +66,6 @@ export interface IAppState {
 
 export interface IOrderView {
     getAddress(): string;
-    setNextToggle(state: boolean): void;
-    setStyleBorder(paymentType: string): void;
 }
 
 export type TOrderForm = {
@@ -83,7 +81,6 @@ export type TOrderActions = {
 export interface IContactsFormView {
     email: string;
     phone: string;
-    setNextToggle(state: boolean): void;
 }
 
 export type TContactsForm = {
@@ -116,9 +113,9 @@ export interface ICardView {
     price: string;
     category?: string;
     description?: string;
-    button?: HTMLButtonElement;
+    // button?: HTMLButtonElement;
     statusBtn: boolean;
-    setCategoryCard(value: string): void;
+    // setCategoryCard(value: string): void;
 }
 
 export const TDictCategoryCard: Map<string, string> = new Map([
@@ -129,21 +126,16 @@ export const TDictCategoryCard: Map<string, string> = new Map([
     ['хард-скил', 'card__category_additional'],
 ]);
 
-// ShoppingCart View
-export type TShoppingCart = {
-    // items: HTMLElement[];
-    // price: number;
+// ShoppingCard View
+export type TShoppingCard = {
     list: HTMLElement[];
 };
 
-export type TShopCartActions = {
+export type TShopCardActions = {
     onClick: (event: MouseEvent) => void;
 };
 
-export interface IShoppingCartView {
-    // items: HTMLElement[];
-    // price: number;
-}
+export interface IShoppingCardView {}
 
 // Page View
 export type TPage = {
@@ -160,11 +152,7 @@ export type TPageActions = {
     onClick: (event: MouseEvent) => void;
 };
 
-export interface IPageView {
-    catalog: HTMLElement[];
-    cartCounter: TUpdateCounter;
-    locked: boolean;
-}
+export interface IPageView {}
 
 // Modal View
 export type TModalData = {
@@ -175,7 +163,6 @@ export interface IModalView {
     content: HTMLElement;
     open(): void;
     close(): void;
-    // toggleCartBtn(state: boolean): void;
     render(data: TModalData): HTMLElement;
 }
 
@@ -186,8 +173,6 @@ export type TFormState = {
 };
 
 export interface IFormView<T> {
-    valid: boolean;
-    errors: string;
     render(state: Partial<T> & TFormState): HTMLFormElement;
 }
 
@@ -210,4 +195,9 @@ export interface IPaymentTypeEvent {
 
 export interface IOrderPriceEvent {
     price: number;
+}
+
+export interface IToggleCardButtonEvent {
+    id: string;
+    disabled: boolean
 }

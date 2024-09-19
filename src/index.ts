@@ -3,21 +3,23 @@ import {EventEmitter} from './components/base/events';
 import {StoreAPI} from './components/StoreAPI';
 import {AppState} from './components/AppData';
 import {Page} from './components/Page';
-import {Card as CatalogItem, Card as CartItem} from './components/Card';
+import {ShoppingCardItem} from './components/ShoppingCardItem';
+import {CatalogPreviewItem} from './components/CatalogPreviewItem';
+import {CatalogItem} from './components/CatalogItem';
 import {Modal} from './components/Modal';
-import {ShoppingCart} from './components/ShoppingCart';
+import {ShoppingCard} from './components/ShoppingCard';
 import {Order} from './components/Order';
 import {Contacts} from './components/Contacts';
 import {Success} from './components/Success';
 import {API_URL as items, CDN_URL as images} from './utils/constants';
 import {ensureElement, cloneTemplate} from './utils/utils';
-import {ICatalogItem, ICartItem, TUpdateCounter, ICardView, IShoppingCartView, IPaymentTypeEvent} from './types';
+import {ICatalogItem, ICardItem, IPaymentTypeEvent} from './types';
 
 // templates
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const cartTemplate = ensureElement<HTMLTemplateElement>('#basket');
-const itemCartTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const itemCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
@@ -28,8 +30,9 @@ const appData = new AppState(events);
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const success = new Success(cloneTemplate(successTemplate), events);
-const shoppingCart = new ShoppingCart(cloneTemplate(cartTemplate), events);
-
+const shoppingCard = new ShoppingCard(cloneTemplate(cartTemplate), events);
+const order = new Order(cloneTemplate(orderTemplate), events);
+const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
 events.on('shoppingcard:click', () => {
     modal.render({
@@ -46,18 +49,16 @@ events.on('success:close', () => {
     modal.close();
 })
 
-// show cart
+// show card
 events.on('card:click', () => {
-    modal.render({content: shoppingCart.render()});
+    modal.render({content: shoppingCard.render()});
 })
 
 // show items on main page
 events.on('items:changed', () => {
-    page.catalog = appData.catalog.map((item) => {
-        const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
-            onClick: () => events.emit('preview:changed', item),
-        });
-        card.setCategoryCard(item.category);
+    const catalog = appData.catalog.map((item) => {
+        const card = new CatalogItem(item, cloneTemplate(cardCatalogTemplate), events);
+
         return card.render({
             title: item.title,
             image: item.image,
@@ -65,24 +66,21 @@ events.on('items:changed', () => {
             category: item.category,
         });
     });
+
+    events.emit('catalog:update', catalog)
 });
-
-
 
 // show item when selected
 events.on('preview:changed', (item: ICatalogItem) => {
-    const card = new CatalogItem(cloneTemplate(cardPreviewTemplate), {
-        onClick: () => events.emit('cart:changed', item),
-    });
+    const card = new CatalogPreviewItem(item, cloneTemplate(cardPreviewTemplate), events);
 
     const isItemAdd = appData.cartState.has(item.id);
 
-    // Теперь напрямую обращаемся к свойству _button
-    if (card._button) {
-        card._button.disabled = isItemAdd;
-    }
+    events.emit('catalog:preview:item:toggle:button', {
+        id: item.id,
+        disabled: isItemAdd
+    })
 
-    card.setCategoryCard(item.category);
     modal.render({
         content: card.render({
             title: item.title,
@@ -95,60 +93,43 @@ events.on('preview:changed', (item: ICatalogItem) => {
     });
 });
 
-// show cart item in shopping cart
-events.on('cart:preview', () => {
+// show card item in shopping card
+events.on('card:preview', () => {
     const shoppingCardItems = appData.cartItems.map((item) => {
-        const cartItem = new CartItem(cloneTemplate(itemCartTemplate), {
-            onClick: () => events.emit('card:remove', item),
-        });
+        const cartItem = new ShoppingCardItem(item, cloneTemplate(itemCardTemplate), events);
+
         return cartItem.render({
             title: item.title,
             price: item.price,
         });
     });
 
-    events.emit('shoppingcard:items:update',  shoppingCardItems);
+    events.emit('shoppingcard:items:update', shoppingCardItems);
     events.emit('shoppingcard:price:update', {price: appData.getTotal()});
 });
 
-// add item to cart
-events.on('cart:changed', (item: ICatalogItem) => {
-    appData.addItemCart(item);
-    appData.setCartPreview();
+// add item to card
+events.on('card:changed', (item: ICatalogItem) => {
+    appData.addItemCard(item);
+    appData.setCardPreview();
     events.emit('shoppingcard:price:update', {price: appData.getTotal()});
-    // shoppingCart.price = appData.getTotal();
 });
 
-// remove item from cart
-events.on('card:remove', (item: ICartItem) => {
-    appData.removeCartItem(item);
-    appData.setCartPreview();
+// remove item from card
+events.on('card:remove', (item: ICardItem) => {
+    appData.removeCardItem(item);
+    appData.setCardPreview();
     events.emit('shoppingcard:price:update', {price: appData.getTotal()});
-    // shoppingCart.price = appData.getTotal();
 });
 
-// picking payment type when making order
-const order = new Order(cloneTemplate(orderTemplate), events);
-
-events.on('payment:method:selected', (payload:IPaymentTypeEvent) => {
+events.on('payment:method:selected', (payload: IPaymentTypeEvent) => {
     appData.setPaymentType(payload.paymentType);
-    events.emit('order:set:nexttoggle', {valid: appData.isOrderValid()});
+    events.emit('order:submit:toggle', {valid: appData.isOrderValid()});
 });
 // when order input changes
 events.on('order.address:change', () => {
     appData.setAddress(order.getAddress()); // Используем метод getAddress
-    order.setNextToggle(appData.isOrderValid());
-});
-
-// when errors validation occurs
-events.on('orderErrors:change', (errors: Record<string, string>) => {
-    if (errors) order.errors = `${errors.payment || ''} ${errors.address || ''}`;
-    else order.errors = '';
-});
-
-events.on('contactsErrors:change', (errors: Record<string, string>) => {
-    if (errors) contacts.errors = `${errors.email || ''} ${errors.phone || ''}`;
-    else order.errors = '';
+    events.emit('order:submit:toggle', {valid: appData.isOrderValid()});
 });
 
 // clicking submit order
@@ -162,9 +143,6 @@ events.on('order:submit', () => {
         }),
     });
 });
-
-// placing an order
-const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
 events.on('contacts:submit', () => {
     api.orderItems({
@@ -180,12 +158,11 @@ events.on('contacts:submit', () => {
             events.emit('success');
             events.emit('order:reset');
             appData.clearAllItems();
-            appData.setCartPreview();
+            appData.setCardPreview();
             events.emit('shoppingcard:price:update', {price: appData.getTotal()});
-            // shoppingCart.price = appData.getTotal();
         })
         .catch((error) => {
-            events.emit('cart:open');
+            events.emit('card:open');
             console.error(error);
         });
 });
@@ -193,7 +170,7 @@ events.on('contacts:submit', () => {
 events.on(/^contacts\..*:change/, () => {
     appData.setPhone(contacts.phone);
     appData.setEmail(contacts.email);
-    contacts.setNextToggle(appData.isContactsValid());
+    events.emit('contacts:submit:toggle', {valid: appData.isOrderValid()});
     appData.isContactsValid();
 });
 
@@ -206,17 +183,7 @@ events.on('success', () => {
     });
 });
 
-// open close modal window
-events.on('modal:open', () => (page.locked = true));
-events.on('modal:close', () => (page.locked = false));
-
-// updating cart counter in header on main
-events.on('cart:updateCounter', (count: TUpdateCounter) => {
-    page.cartCounter = count;
-});
-
 // fetch items
-api
-    .getCatalogList()
+api.getCatalogList()
     .then(appData.setCatalog.bind(appData))
     .catch((error) => console.log(error));

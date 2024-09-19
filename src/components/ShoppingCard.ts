@@ -1,12 +1,12 @@
 import {Component} from './base/Component';
 import {cloneTemplate, createElement, ensureElement} from '../utils/utils';
-import {ICartItem, IOrderPriceEvent, IShoppingCartView, TShopCartActions, TShoppingCart} from '../types';
+import {ICardItem, IOrderPriceEvent, IShoppingCardView, TShopCardActions, TShoppingCard} from '../types';
 import {IEvents} from "./base/events";
-import {Card as CartItem} from "./Card";
+import {Card as CardItem} from "./Card";
 
-export class ShoppingCart
-	extends Component<TShoppingCart>
-	implements IShoppingCartView {
+export class ShoppingCard
+	extends Component<TShoppingCard>
+	implements IShoppingCardView {
 	protected _items: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLElement;

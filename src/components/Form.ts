@@ -50,16 +50,6 @@ export class Form<T> extends Component<TFormState> implements IFormView<T> {
         });
     }
 
-    // Установка валидности формы
-    set valid(value: boolean) {
-        this._submit.disabled = !value;
-    }
-
-    // Установка ошибок формы
-    set errors(value: string) {
-        this.setText(this._errors, value);
-    }
-
     // Рендеринг состояния формы
     render(state: Partial<T> & TFormState) {
         const { valid, errors, ...inputs } = state;

@@ -22,7 +22,6 @@ export class Success extends Component<TSuccessForm> implements ISuccessView {
 
         this._close.addEventListener('click', () => {
             events.emit('success:close');
-
         });
     }
 

@@ -27,18 +27,25 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 			})
 		);
 
-		events.on('order:set:nexttoggle', (payload:TFormState) => {
-			this.setNextToggle(payload.valid);
-		});
-
 		events.on('order:reset', () => {
 			this._paymentTypes.forEach(button =>
 				this.removeStyleClass(button, 'button_alt-active')
 			);
 		});
 
-		// Инициализация обработчиков событий
-		this.valid = false;
+		events.on('orderErrors:change', (errors: Record<string, string>) => {
+			if (errors) {
+				this.setText(this._errors, `${errors.payment || ''} ${errors.address || ''}`)
+			} else {
+				this.setText(this._errors, '')
+			}
+		});
+
+		events.on('order:submit:toggle', (payload: TFormState) => {
+			this._submit.disabled = !payload.valid;
+		});
+
+		this._submit.disabled = true;
 	}
 
 	// Добавляем метод для получения адреса
@@ -46,12 +53,8 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 		return this.container.address.value;
 	}
 
-	setNextToggle(state: boolean): void {
-		this.valid = state;
-	}
-
 	// Установка стиля для активной кнопки оплаты
-	setStyleBorder(paymentType: string): void {
+	private setStyleBorder(paymentType: string): void {
 		this._paymentTypes.forEach(button =>
 			this.removeStyleClass(button, 'button_alt-active')
 		);

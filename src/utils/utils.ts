@@ -133,3 +133,8 @@ export function createElement<
     }
     return element;
 }
+
+export function toggleClass(element: HTMLElement, className: string, condition: boolean): void {
+    if (condition) element.classList.add(className);
+    else element.classList.remove(className);
+}

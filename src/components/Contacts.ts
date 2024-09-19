@@ -1,4 +1,4 @@
-import { IContactsFormView, TContactsActions, TContactsForm } from '../types';
+import {IContactsFormView, TContactsForm, TFormState} from '../types';
 import { IEvents } from './base/events';
 import { Form } from './Form';
 
@@ -11,8 +11,19 @@ export class Contacts extends Form<TContactsForm> implements IContactsFormView {
 	) {
 		super(container, events);
 
-		// Инициализируем valid как false
-		this.valid = false;
+		events.on('contactsErrors:change', (errors: Record<string, string>) => {
+			if (errors) {
+				this.setText(this._errors, `${errors.email || ''} ${errors.phone || ''}`)
+			} else {
+				this.setText(this._errors, '')
+			}
+		});
+
+		events.on('contacts:submit:toggle', (payload: TFormState) => {
+			this._submit.disabled = !payload.valid;
+		});
+
+		this._submit.disabled = true;
 	}
 
 	// Универсальный метод для получения и установки значений полей формы
@@ -39,9 +50,5 @@ export class Contacts extends Form<TContactsForm> implements IContactsFormView {
 
 	set email(value: string) {
 		this.setFieldValue('email', value);
-	}
-
-	setNextToggle(state: boolean) {
-		this.valid = state;
 	}
 }
