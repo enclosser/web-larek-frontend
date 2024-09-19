@@ -1,6 +1,6 @@
 import { Component } from './base/Component';
 import { ensureElement } from '../utils/utils';
-import { TCardActions, ICardView, TCard, TDictCategoryCard } from '../types';
+import { ICardView, TCard, TDictCategoryCard } from '../types';
 import {IEvents} from "./base/events";
 
 export class Card<T> extends Component<TCard> implements ICardView {
@@ -24,11 +24,6 @@ export class Card<T> extends Component<TCard> implements ICardView {
 		this._category = container.querySelector(`.${blockName}__category`);
 		this._description = container.querySelector(`.${blockName}__text`) as HTMLParagraphElement;
 		this._button = container.querySelector(`.${blockName}__button`);
-	}
-
-	// Удалить геттер button
-	set statusBtn(value: boolean) {
-		this._statusBtn = value;
 	}
 
 	set title(value: string) {

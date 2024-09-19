@@ -1,6 +1,6 @@
 import { ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
-import { ISuccessView, TSuccessActions, TSuccessForm } from '../types';
+import { ISuccessView, TSuccessForm } from '../types';
 import {IEvents} from "./base/events";
 
 export class Success extends Component<TSuccessForm> implements ISuccessView {

@@ -6,8 +6,8 @@ import {IEvents} from "./base/events";
 export class Page extends Component<TPage> implements IPageView {
 	protected _catalog: HTMLElement;
 	protected _wrapper: HTMLElement;
-	protected _cart: HTMLElement;
-	protected _cartCounter: HTMLElement;
+	protected _card: HTMLElement;
+	protected _cardCounter: HTMLElement;
 
 	constructor(container: HTMLElement, events: IEvents) {
 		super(container);
@@ -15,11 +15,11 @@ export class Page extends Component<TPage> implements IPageView {
 		// Инициализация элементов с помощью ensureElement
 		this._catalog = ensureElement<HTMLElement>('.gallery', container);
 		this._wrapper = ensureElement<HTMLElement>('.page__wrapper', container);
-		this._cart = ensureElement<HTMLElement>('.header__basket', container);
-		this._cartCounter = ensureElement<HTMLElement>('.header__basket-counter', container);
+		this._card = ensureElement<HTMLElement>('.header__basket', container);
+		this._cardCounter = ensureElement<HTMLElement>('.header__basket-counter', container);
 
 		// Добавление обработчика клика на корзину, если он существует
-		this._cart.addEventListener('click', () => {
+		this._card.addEventListener('click', () => {
 			events.emit('card:click');
 		});
 
@@ -28,7 +28,7 @@ export class Page extends Component<TPage> implements IPageView {
 		});
 
 		events.on('card:updateCounter', (payload: TUpdateCounter) => {
-			this.setText(this._cartCounter, payload.count);
+			this.setText(this._cardCounter, payload.count);
 		});
 
 		events.on('modal:open', () => {

@@ -1,5 +1,5 @@
 import {Card} from './Card';
-import {TCardActions, ICardView, TCard, ICatalogItem, IToggleCardButtonEvent} from '../types';
+import {ICardView, TCard, ICatalogItem, IToggleCardButtonEvent} from '../types';
 import {IEvents} from "./base/events";
 
 export class CatalogPreviewItem extends Card<TCard> implements ICardView {

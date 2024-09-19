@@ -1,5 +1,5 @@
 import {Card} from './Card';
-import {TCardActions, ICardView, TCard, ICatalogItem, ICardItem} from '../types';
+import {ICardView, TCard, ICatalogItem, ICardItem} from '../types';
 import {IEvents} from "./base/events";
 
 export class ShoppingCardItem extends Card<TCard> implements ICardView {

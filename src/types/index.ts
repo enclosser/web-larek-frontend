@@ -51,8 +51,8 @@ export type TContactsState = {
 };
 
 export interface IAppState {
-    cartItems: ICardItem[];
-    cartState: Set<string>;
+    cardItems: ICardItem[];
+    cardState: Set<string>;
     paymentState: TPaymentState;
     contactsState: TContactsState;
     setCatalog(items: ICatalogItem[]): void;
@@ -93,10 +93,6 @@ export type TContactsActions = {
 };
 
 // Card View
-export type TCardActions = {
-    onClick: (event: MouseEvent) => void;
-};
-
 export type TCard = {
     title: string;
     image?: string;
@@ -113,9 +109,6 @@ export interface ICardView {
     price: string;
     category?: string;
     description?: string;
-    // button?: HTMLButtonElement;
-    statusBtn: boolean;
-    // setCategoryCard(value: string): void;
 }
 
 export const TDictCategoryCard: Map<string, string> = new Map([
@@ -141,7 +134,7 @@ export interface IShoppingCardView {}
 export type TPage = {
     catalog: HTMLElement[];
     locked: boolean;
-    cartCounter: TUpdateCounter;
+    cardCounter: TUpdateCounter;
 };
 
 export type TUpdateCounter = {

@@ -1,8 +1,7 @@
 import {Component} from './base/Component';
-import {cloneTemplate, createElement, ensureElement} from '../utils/utils';
-import {ICardItem, IOrderPriceEvent, IShoppingCardView, TShopCardActions, TShoppingCard} from '../types';
+import { createElement, ensureElement} from '../utils/utils';
+import {IOrderPriceEvent, IShoppingCardView, TShoppingCard} from '../types';
 import {IEvents} from "./base/events";
-import {Card as CardItem} from "./Card";
 
 export class ShoppingCard
 	extends Component<TShoppingCard>

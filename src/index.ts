@@ -18,7 +18,7 @@ import {ICatalogItem, ICardItem, IPaymentTypeEvent} from './types';
 // templates
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
-const cartTemplate = ensureElement<HTMLTemplateElement>('#basket');
+const cardTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const itemCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
@@ -30,7 +30,7 @@ const appData = new AppState(events);
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const success = new Success(cloneTemplate(successTemplate), events);
-const shoppingCard = new ShoppingCard(cloneTemplate(cartTemplate), events);
+const shoppingCard = new ShoppingCard(cloneTemplate(cardTemplate), events);
 const order = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
@@ -74,7 +74,7 @@ events.on('items:changed', () => {
 events.on('preview:changed', (item: ICatalogItem) => {
     const card = new CatalogPreviewItem(item, cloneTemplate(cardPreviewTemplate), events);
 
-    const isItemAdd = appData.cartState.has(item.id);
+    const isItemAdd = appData.cardState.has(item.id);
 
     events.emit('catalog:preview:item:toggle:button', {
         id: item.id,
@@ -95,10 +95,10 @@ events.on('preview:changed', (item: ICatalogItem) => {
 
 // show card item in shopping card
 events.on('card:preview', () => {
-    const shoppingCardItems = appData.cartItems.map((item) => {
-        const cartItem = new ShoppingCardItem(item, cloneTemplate(itemCardTemplate), events);
+    const shoppingCardItems = appData.cardItems.map((item) => {
+        const cardItem = new ShoppingCardItem(item, cloneTemplate(itemCardTemplate), events);
 
-        return cartItem.render({
+        return cardItem.render({
             title: item.title,
             price: item.price,
         });
@@ -149,7 +149,7 @@ events.on('contacts:submit', () => {
         ...appData.contactsState,
         ...appData.paymentState,
         total: appData.getTotal(),
-        items: appData.cartItems
+        items: appData.cardItems
             .filter(cardItem => cardItem.price && cardItem.price > 0)
             .map(cardItem => cardItem.id)
     })

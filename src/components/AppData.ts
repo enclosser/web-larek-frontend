@@ -10,9 +10,9 @@ import { IEvents } from './base/events';
 
 export class AppState implements IAppState {
 	catalog: ICatalogItem[] = [];
-	cartItems: ICardItem[] = [];
+	cardItems: ICardItem[] = [];
 	formErrors: TFormErrors = {};
-	cartState = new Set<string>();
+	cardState = new Set<string>();
 	paymentState: TPaymentState = { payment: null, address: null };
 	contactsState: TContactsState = { email: null, phone: null };
 
@@ -26,30 +26,30 @@ export class AppState implements IAppState {
 	}
 
 	addItemCard(item: ICatalogItem): void {
-		if (this.cartState.has(item.id)) return; // Возвращаем сразу, если товар уже в корзине
+		if (this.cardState.has(item.id)) return; // Возвращаем сразу, если товар уже в корзине
 
-		this.cartState.add(item.id);
+		this.cardState.add(item.id);
 		this.events.emit('preview:changed', item);
 		this.events.emit('card:updateCounter', {
-			count: this.cartState.size,
+			count: this.cardState.size,
 		});
 	}
 
 	removeCardItem(item: ICardItem): void {
-		this.cartState.delete(item.id);
+		this.cardState.delete(item.id);
 		this.events.emit('card:updateCounter', {
-			count: this.cartState.size,
+			count: this.cardState.size,
 		});
 		this.events.emit('card:updatePrice', { total: this.getTotal() });
 	}
 
 	setCardPreview(): void {
-		this.cartItems = this.catalog.filter(item => this.cartState.has(item.id));
-		this.events.emit('card:preview', { count: this.cartState.size });
+		this.cardItems = this.catalog.filter(item => this.cardState.has(item.id));
+		this.events.emit('card:preview', { count: this.cardState.size });
 	}
 
 	getTotal(): number {
-		return this.cartItems.reduce((acc, next) => acc + (next.price ?? 0), 0);
+		return this.cardItems.reduce((acc, next) => acc + (next.price ?? 0), 0);
 	}
 
 	setAddress(address: string): void {
@@ -93,13 +93,13 @@ export class AppState implements IAppState {
 	}
 
 	clearAllItems(): void {
-		this.cartState.clear();
-		this.cartItems = [];
+		this.cardState.clear();
+		this.cardItems = [];
 		this.paymentState = { payment: null, address: null };
 		this.contactsState = { email: null, phone: null };
 		this.formErrors = {};
 		this.events.emit('card:updateCounter', {
-			count: this.cartState.size,
+			count: this.cardState.size,
 		});
 		this.events.emit('items:changed');
 	}
