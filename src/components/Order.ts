@@ -31,6 +31,7 @@ export class Order extends Form<TOrderForm> implements IOrderView {
 			this._paymentTypes.forEach(button =>
 				this.removeStyleClass(button, 'button_alt-active')
 			);
+			this.container.address.value = '';
 		});
 
 		events.on('orderErrors:change', (errors: Record<string, string>) => {
